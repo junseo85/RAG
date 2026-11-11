@@ -11,6 +11,18 @@ def build_index(data_dir):
     for p in sorted(pathlib.Path(data_dir).glob("*")):
         if p.suffix.lower() in (".txt", ".md"):
             chunks += chunk_document(p.name, p.read_text(errors="replace"))
+        elif p.suffix.lower() == ".pdf":
+            try:
+                import fitz
+            except ImportError as exc:
+                raise RuntimeError(
+                    "PDF support requires PyMuPDF: python -m pip install pymupdf"
+                ) from exc
+            with fitz.open(p) as pdf:
+                pages = [page.get_text() for page in pdf]
+            if not any(text.strip() for text in pages):
+                raise ValueError(f"No extractable text in {p}; OCR may be required.")
+            chunks += chunk_document(p.name, "", pages=pages)
     return HybridIndex(chunks)
 
 
