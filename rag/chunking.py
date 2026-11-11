@@ -33,9 +33,8 @@ def clean_line(line):
     return re.sub(r"\s+", " ", line).strip()
 
 
-def split_sections(raw):
+def split_sections(raw, *, pages=None):
     """Yield (heading, page, body) tuples."""
-    raw = re.sub(r"-\n(?=[a-z])", "", raw)
     heading, page, start_page, body, out = "", 1, 1, [], []
 
     def flush():
@@ -43,22 +42,32 @@ def split_sections(raw):
         if text:
             out.append((heading, start_page, text))
 
-    for line in raw.splitlines():
-        m = PAGE_RE.match(line)
-        if m:
-            page = int(m.group(1))
-            continue
-        line = clean_line(line)
-        if not line:
-            body.append("\n") if body and body[-1] != "\n" else None
-            continue
-        if HEADING_RE.match(line) and len(line) < 100:
+    for physical_page, text in enumerate(pages if pages is not None else [raw], 1):
+        if pages is not None and physical_page != page:
             flush()
-            heading, start_page, body = line.lstrip("# ").strip(), page, []
-            continue
-        if not body:
-            start_page = page
-        body.append(line)
+            body = []
+            page = physical_page
+        text = re.sub(r"-\n(?=[a-z])", "", text)
+        for line in text.splitlines():
+            m = PAGE_RE.match(line)
+            if m:
+                marker_page = int(m.group(1))
+                if pages is None and marker_page != page:
+                    flush()
+                    body = []
+                    page = marker_page
+                continue
+            line = clean_line(line)
+            if not line:
+                body.append("\n") if body and body[-1] != "\n" else None
+                continue
+            if HEADING_RE.match(line) and len(line) < 100:
+                flush()
+                heading, start_page, body = line.lstrip("# ").strip(), page, []
+                continue
+            if not body:
+                start_page = page
+            body.append(line)
     flush()
     return [(h, p, re.sub(r"\s*\n\s*", " ", t)) for h, p, t in out]
 
@@ -83,9 +92,9 @@ def window(text, max_chars, overlap):
     return chunks
 
 
-def chunk_document(doc, raw, max_chars=600, overlap=100):
+def chunk_document(doc, raw, max_chars=600, overlap=100, *, pages=None):
     chunks = []
-    for heading, page, body in split_sections(raw):
+    for heading, page, body in split_sections(raw, pages=pages):
         for piece in window(body, max_chars, overlap):
             text = f"{heading}\n{piece}" if heading else piece
             chunks.append(Chunk(f"{doc}#{len(chunks)}", doc, heading, page, text))
