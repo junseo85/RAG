@@ -1,0 +1,15 @@
+SECTION 03 30 00 - CAST-IN-PLACE CONCRETE
+PART 1 - GENERAL
+1.01 SUBMITTALS
+A. Mix designs: submit for each class of concrete, with proof of 28-day strength.
+1.02 QUALITY ASSURANCE
+A. Testing: cast four cylinders per 50 cu. yd. or fraction thereof; test one at 7 days
+   and two at 28 days.
+PART 2 - PRODUCTS
+2.01 CONCRETE MIX
+A. Compressive strength: 4,000 psi at 28 days for slabs on grade.
+B. Maximum water-cement ratio: 0.45.   Slump: 4 inches +/- 1 inch.
+PART 3 - EXECUTION
+3.01 CURING
+A. Cure for a minimum of 7 days using wet curing or curing compound.
+B. Do not place concrete when ambient temperature is below 40 deg F without cold weather protection.
