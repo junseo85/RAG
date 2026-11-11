@@ -4,7 +4,7 @@ small production-style RAG system built over messy construction and safety docum
 ## Quick start
 Dependency-free (stdlib only) RAG over messy construction/safety docs in `data/`.
 
-    python -m rag.cli "how high must a guardrail top rail be?"
+    python -m rag.cli "what is the guardrail top rail height?"
     python -m pytest tests
 
 - **Chunking** (`rag/chunking.py`): cleans OCR/page noise, splits on headings/clauses, then sentence-bounded windows (600 chars, 100 overlap); heading + page kept as metadata.
